@@ -157,7 +157,15 @@ class GUI():
         self.represent_mode.set(1)
         ctk.CTkRadioButton(self.frame2, radiobutton_height=20, radiobutton_width=20, text="Text", font=("Arial", 15), variable=self.represent_mode, value=1, command= lambda: self.switch(1)).place(relx=0.6, rely=0.32)
         ctk.CTkRadioButton(self.frame2, radiobutton_height=20, radiobutton_width=20, text="Numeric", font=("Arial", 15), variable=self.represent_mode, value=0, command= lambda: self.switch(0)).place(relx=0.75, rely=0.32)
-        
+
+        # add info labbel
+        ctk.CTkLabel(self.frame2, text="Normalize Data", font=("Arial", 15)).place(relx=0.6, rely=0.42)
+
+        # add normalize radio button
+        self.norm = tk.IntVar()
+        self.norm.set(1)
+        ctk.CTkRadioButton(self.frame2, radiobutton_height=20, radiobutton_width=20, text="ON", font=("Arial", 15), variable=self.norm, value=1).place(relx=0.6, rely=0.52)
+        ctk.CTkRadioButton(self.frame2, radiobutton_height=20, radiobutton_width=20, text="OFF", font=("Arial", 15), variable=self.norm, value=0).place(relx=0.75, rely=0.52)
 
         # add button to bottom of frame
         ctk.CTkButton(self.frame2, text="Process", font=("Arial", 15), command=self.process).pack(side="bottom", pady=20)
@@ -242,7 +250,7 @@ class GUI():
             search = list(self.numeric_search_items.keys())
         
         
-        fig, ax = driver_gui(self.text_box.get(),search,self.xmin.get(),self.xmax.get(),self.represent_mode.get(),not self.is_ele.get(),int(self.delatom.get()),int(self.delmol.get()))
+        fig, ax = driver_gui(self.text_box.get(),self.norm.get(),search,self.xmin.get(),self.xmax.get(),self.represent_mode.get(),not self.is_ele.get(),int(self.delatom.get()),int(self.delmol.get()))
         self.add_plot(fig, ax)
 
 

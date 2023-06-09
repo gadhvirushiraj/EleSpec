@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from const import elnames, ionstages, molnames, ifacod
+from normalize import spec_normalize
 
 # initialize arrays for the data
 wl = []
@@ -19,6 +20,10 @@ idj = []
 imm = []  
 imj = [] 
 
+# temp fl
+fl_temp= []
+fl_norm = []
+
 # maxpoints allowed in the file
 maxpoint = 2000000
 maxmol = 326
@@ -28,35 +33,37 @@ ele_pos = {}
 
 # get the data from the file and store it in the arrays
 def read_file(file):
-    global fl, bb
-    if len(wl) == 0:
-        with open(file) as my_file:
-            print('Reading file: ', file)
-            for line in my_file:
-                if len(wl) > maxpoint:
-                    print('Maximum number of points reached: ', maxpoint)
-                    break
-                data = line.strip().split()
-                wl.append(float(data[0])) # wldum
-                wll.append(float(data[5])) # wlldum
-                wlm.append(float(data[8])) # wlmdum
-                wlj.append(float(data[11])) # wljdum
-                fl.append(float(data[1].replace('D','E'))) # fldum
-                bb.append(float(data[2].replace('D','E'))) # bbdum
-                iext.append(float(data[3])) # iextdum
-                icnt.append(float(data[4])) # icntdum
-                idl.append(float(data[6])) # idldum
-                iml.append(float(data[7])) # imldum
-                idm.append(float(data[9])) # idmdum
-                idj.append(float(data[12])) # idjdum
-                imm.append(float(data[10])) # immdum
-                imj.append(float(data[13])) # imjdum
-            print('Done reading file: ', file)
-            print('Number of lines read: ', len(wl))
+    global fl, bb, fl_temp
+    
+    with open(file) as my_file:
+        print('Reading file: ', file)
+        for line in my_file:
+            if len(wl) > maxpoint:
+                print('Maximum number of points reached: ', maxpoint)
+                break
+            data = line.strip().split()
+            wl.append(float(data[0])) # wldum
+            wll.append(float(data[5])) # wlldum
+            wlm.append(float(data[8])) # wlmdum
+            wlj.append(float(data[11])) # wljdum
+            fl.append(float(data[1].replace('D','E'))) # fldum
+            bb.append(float(data[2].replace('D','E'))) # bbdum
+            iext.append(float(data[3])) # iextdum
+            icnt.append(float(data[4])) # icntdum
+            idl.append(float(data[6])) # idldum
+            iml.append(float(data[7])) # imldum
+            idm.append(float(data[9])) # idmdum
+            idj.append(float(data[12])) # idjdum
+            imm.append(float(data[10])) # immdum
+            imj.append(float(data[13])) # imjdum
+        print('Done reading file: ', file)
+        print('Number of lines read: ', len(wl))
 
-            # manipulation in fl and bb
-            fl = 10**(np.array(fl) - 40)
-            bb = 10**(np.array(bb) - 40)
+        # manipulation in fl and bb
+        fl = 10**(np.array(fl) - 40)
+        bb = 10**(np.array(bb) - 40)
+
+        fl_temp = fl.copy()
 
 
 def plot(ax, xmin, xmax, c='black', lw = '1'):
@@ -156,9 +163,20 @@ def plotid(xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
         wllo = wll[i]
         idlo = idl[i]
 
-def driver_gui(file,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
-    global ele_pos
-    read_file(file)
+def driver_gui(file,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
+    global ele_pos, fl, fl_norm
+
+    if len(wl) == 0:
+        read_file(file)
+        fl_norm = spec_normalize(fl)
+
+    # normalize fl
+    if norm:
+        print("converting to normalized data")
+        fl = fl_norm.copy()
+    else:
+        fl = fl_temp.copy()
+    
 
     fig, ax = plt.subplots()
     plot(ax, xmin, xmax, 'white', 0.5)
