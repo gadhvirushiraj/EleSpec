@@ -33,25 +33,37 @@ class GUI():
         self.root.mainloop()
 
     def add_plot(self, fig, ax):
+
+        # configure plot style
+        if True:
+            color = 'k'
+            bg = 'white'
+        else:
+            color = 'white'
+            bg = '#232323'
+
         # configure plot 
         if fig == None or ax == None :
             fig, ax = plt.subplots(figsize=(self.root.winfo_width()/100, self.root.winfo_height()/200))
 
-        ax.set_facecolor("#232323")
-        fig.patch.set_facecolor("#232323")
+        ax.set_facecolor('white') # change background color to dark grey -> #232323
+        fig.patch.set_facecolor('white') # change background color to dark grey -> #232323
 
-        ax.tick_params(axis='x', colors='white')
-        ax.tick_params(axis='y', colors='white')
+        ax.tick_params(axis='x', colors=color)
+        ax.tick_params(axis='y', colors=color)
         plt.yticks(fontsize=5)
         plt.xticks(fontsize=5)
 
         ax.spines[['right', 'top']].set_visible(False)
-        ax.spines['left'].set_color('white')
-        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color(color)
+        ax.spines['bottom'].set_color(color)
 
         ax.margins(y=0.1)
         ax.ticklabel_format(useOffset=False, style='scientific', axis='y')
         plt.ylim(ax.get_ylim()[0]*0.5, ax.get_ylim()[1]*1.7)
+        plt.xlabel('Wavelength (Å)', fontsize=5)
+        plt.ylabel('Flux', fontsize=5)
+    
         fig.subplots_adjust(bottom=0.2)
 
         # add plot to gui
@@ -234,15 +246,17 @@ class GUI():
             tk.messagebox.showerror("Error", "Lowerbound must be strictly smaller than upperbound")
             return
         
+        # check if delatom and delmol is not empty
         if self.delatom.get() == "" or self.delmol.get() == "":
             tk.messagebox.showerror("Error", "Delatom and Delmol is needed")
             return
         
-        if self.delatom.get().isnumeric() == False and self.delmol.get().isnumeric() == False:
-            tk.messagebox.showerror("Error", "Delatom and Delmol must be numeric")
+        # check if delatom and delmol is numeric integer
+        if self.delatom.get().isnumeric() == False and self.delmol.get().isnumeric() == False and int(self.delatom.get()) < 0 and int(self.delmol.get()) < 0:
+            tk.messagebox.showerror("Error", "Delatom and Delmol must be numeric integer")
             return
         
-
+        
         search = []
         if self.represent_mode.get() == 1:
             search = list(self.search_items.keys())
@@ -250,7 +264,7 @@ class GUI():
             search = list(self.numeric_search_items.keys())
         
         
-        fig, ax = driver_gui(self.text_box.get(),self.norm.get(),search,self.xmin.get(),self.xmax.get(),self.represent_mode.get(),not self.is_ele.get(),int(self.delatom.get()),int(self.delmol.get()))
+        fig, ax = driver_gui(self.text_box.get(),'k',self.norm.get(),search,self.xmin.get(),self.xmax.get(),self.represent_mode.get(),not self.is_ele.get(),int(self.delatom.get()),int(self.delmol.get()))
         self.add_plot(fig, ax)
 
 

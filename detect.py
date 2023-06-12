@@ -163,7 +163,7 @@ def plotid(xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
         wllo = wll[i]
         idlo = idl[i]
 
-def driver_gui(file,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
+def driver_gui(file,color,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
     global ele_pos, fl, fl_norm
 
     if len(wl) == 0:
@@ -179,7 +179,7 @@ def driver_gui(file,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin
     
 
     fig, ax = plt.subplots()
-    plot(ax, xmin, xmax, 'white', 0.5)
+    plot(ax, xmin, xmax, color, 0.5)
     pre_ymax = ax.get_ylim()[1]
 
     plotid(xmin,xmax,flag,molflg,delatom,delmol,excode,exlin)
@@ -189,8 +189,8 @@ def driver_gui(file,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin
 
     def draw_line():
         for i in range(len(ele_pos[e][0])):
-            ax.plot([ele_pos[e][0][i], ele_pos[e][0][i]], [ystart, ytext], color='lightblue', linestyle= (0, (5, 10)), linewidth=0.5)
-            ax.text(ele_pos[e][0][i], ytext, " " + ele_pos[e][1][i], rotation='vertical', horizontalalignment='center', verticalalignment='bottom', color='lightblue', fontsize = 'xx-small') 
+            ax.plot([ele_pos[e][0][i], ele_pos[e][0][i]], [ystart, ytext], color='blue', linestyle= (0, (5, 10)), linewidth=0.5)
+            ax.text(ele_pos[e][0][i], ytext, " " + ele_pos[e][1][i], rotation='vertical', horizontalalignment='center', verticalalignment='bottom', color='blue', fontsize = 'xx-small') 
    
     
     if type(ele) == list:
