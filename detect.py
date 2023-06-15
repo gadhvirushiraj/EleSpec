@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import argparse
 from const import elnames, ionstages, molnames, ifacod
 from normalize import spec_normalize
+import pandas as pd
+import os
 
 # initialize arrays for the data
 wl = []
@@ -33,37 +35,41 @@ ele_pos = {}
 
 # get the data from the file and store it in the arrays
 def read_file(file):
-    global fl, bb, fl_temp
-    
-    with open(file) as my_file:
-        print('Reading file: ', file)
-        for line in my_file:
-            if len(wl) > maxpoint:
-                print('Maximum number of points reached: ', maxpoint)
-                break
-            data = line.strip().split()
-            wl.append(float(data[0])) # wldum
-            wll.append(float(data[5])) # wlldum
-            wlm.append(float(data[8])) # wlmdum
-            wlj.append(float(data[11])) # wljdum
-            fl.append(float(data[1].replace('D','E'))) # fldum
-            bb.append(float(data[2].replace('D','E'))) # bbdum
-            iext.append(float(data[3])) # iextdum
-            icnt.append(float(data[4])) # icntdum
-            idl.append(float(data[6])) # idldum
-            iml.append(float(data[7])) # imldum
-            idm.append(float(data[9])) # idmdum
-            idj.append(float(data[12])) # idjdum
-            imm.append(float(data[10])) # immdum
-            imj.append(float(data[13])) # imjdum
-        print('Done reading file: ', file)
-        print('Number of lines read: ', len(wl))
+    global fl, bb, fl_temp, wl, wll, wlm, wlj, iext, icnt, idl, iml, idm, idj, imm, imj
 
-        # manipulation in fl and bb
-        fl = 10**(np.array(fl) - 40)
-        bb = 10**(np.array(bb) - 40)
+    filename, file_extension = os.path.splitext(file)
 
-        fl_temp = fl.copy()
+    if file_extension == '.xz':
+        data = pd.read_table(file, compression='xz', delim_whitespace=True, header=None)
+    else:
+        data = pd.read_table(file, delim_whitespace=True, header=None)
+
+    if len(data) > maxpoint:
+        print('Maximum number of points reached: ', maxpoint)
+    else:
+        wl = data.iloc[:, 0].astype(float).tolist()  # wldum
+        wll = data.iloc[:, 5].astype(float).tolist()  # wlldum
+        wlm = data.iloc[:, 8].astype(float).tolist()  # wlmdum
+        wlj = data.iloc[:, 11].astype(float).tolist()  # wljdum
+        fl = data.iloc[:, 1].astype(float).tolist()  # fldum
+        bb = data.iloc[:, 2].astype(float).tolist()  # bbdum
+        iext = data.iloc[:, 3].astype(float).tolist()  # iextdum
+        icnt = data.iloc[:, 4].astype(float).tolist()  # icntdum
+        idl = data.iloc[:, 6].astype(float).tolist()  # idldum
+        iml = data.iloc[:, 7].astype(float).tolist()  # imldum
+        idm = data.iloc[:, 9].astype(float).tolist()  # idmdum
+        idj = data.iloc[:, 12].astype(float).tolist()  # idjdum
+        imm = data.iloc[:, 10].astype(float).tolist()  # immdum
+        imj = data.iloc[:, 13].astype(float).tolist()  # imjdum
+
+    print('Done reading file: ', file)
+    print('Number of lines read: ', len(wl))
+
+    # manipulation in fl and bb
+    fl = 10**(np.array(fl) - 40)
+    bb = 10**(np.array(bb) - 40)
+
+    fl_temp = fl.copy()
 
 
 def plot(ax, xmin, xmax, c='black', lw = '1'):
@@ -163,11 +169,14 @@ def plotid(xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
         wllo = wll[i]
         idlo = idl[i]
 
-def driver_gui(file,color,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
-    global ele_pos, fl, fl_norm
 
-    if len(wl) == 0:
+last_file = ''
+def driver_gui(file,color,norm,ele,xmin,xmax,flag,molflg,delatom,delmol,excode=0,exlin=0):
+    global ele_pos, fl, fl_norm,last_file
+
+    if len(wl) == 0 or file != last_file:
         read_file(file)
+        last_file = file
         fl_norm = spec_normalize(fl)
 
     # normalize fl

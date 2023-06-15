@@ -1,4 +1,3 @@
-import numpy as np
 import tkinter as tk
 import customtkinter as ctk
 import matplotlib.pyplot as plt
